@@ -17,7 +17,7 @@ namespace Book_Management_API.DataAccess
             {
                 return -1;
             }
-            var uniqueBookTitle = await GetBookByTitle(book.Title);
+            var uniqueBookTitle = await _context.Books.Where(x => x.Title.ToLower().Contains(book.Title.ToLower()) && x.IsDeleted == false).FirstOrDefaultAsync();
             if (uniqueBookTitle != null) 
             {
                 return -1;
@@ -37,7 +37,7 @@ namespace Book_Management_API.DataAccess
                 {
                     continue;
                 }
-                var uniqueBookTitle = await GetBookByTitle(book.Title);
+                var uniqueBookTitle = await _context.Books.Where(x => x.Title.ToLower().Contains(book.Title.ToLower()) && x.IsDeleted == false).FirstOrDefaultAsync();
                 if (uniqueBookTitle == null)
                 {
                     newBooks.Add(book);
@@ -101,7 +101,7 @@ namespace Book_Management_API.DataAccess
             {
                 return null;
             }
-            var bookById = await GetBookById(book.Id);
+            var bookById = await _context.Books.Where(x => x.Id == book.Id && x.IsDeleted == false).FirstOrDefaultAsync();
             if (bookById != null)
             {
                 if(bookById.Title != book.Title)

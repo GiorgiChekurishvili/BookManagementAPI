@@ -26,7 +26,9 @@ namespace Book_Management_API.Controllers
             {
                 return NotFound("book not found");
             }
-            return Ok(book);
+
+            var mapbook = _mapper.Map<BookDTO>(book);
+            return Ok(mapbook);
         }
         [HttpGet("by-title")]
         public async Task<ActionResult<BookDTO>> GetByTitle([FromQuery] string title)
@@ -36,7 +38,8 @@ namespace Book_Management_API.Controllers
             {
                 return NotFound("book not found");
             }
-            return Ok(book);
+            var mapbook = _mapper.Map<BookDTO>(book);
+            return Ok(mapbook);
         }
         [HttpGet("titles")]
         public async Task<ActionResult<string>> GetAllTitle()
@@ -51,11 +54,11 @@ namespace Book_Management_API.Controllers
             var id = await _bookRepository.AddBook(map);
             if (id == -1)
             {
-                return BadRequest("publication year is invalid");
+                return BadRequest("Book already exists");
             }
             else if (id == -2)
             {
-                return BadRequest("Book already exists");
+                return BadRequest("publication year is invalid");
             }
             return Ok(id);
        
