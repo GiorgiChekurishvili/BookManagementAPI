@@ -1,3 +1,4 @@
+using Book_Management_API.DataAccess;
 using Book_Management_API.Entities.Context;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,6 +11,10 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<BookManagementDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+
+
+builder.Services.AddScoped<IAuthRepisotory, AuthRepository>();
+builder.Services.AddScoped<IBookRepository, BookRepository>();
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -22,6 +27,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
 
 app.MapControllers();
 
