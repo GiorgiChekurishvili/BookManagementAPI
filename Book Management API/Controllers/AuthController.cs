@@ -21,7 +21,7 @@ namespace Book_Management_API.Controllers
             var token = await _repository.Login(userLogin.Email, userLogin.Password);
             if(token == null)
             {
-                return BadRequest("User doesnt exist");
+                return BadRequest("Invalid Email or Password");
             }
             return Ok(token);
         }
