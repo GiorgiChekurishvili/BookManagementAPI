@@ -84,11 +84,11 @@
 - **DELETE /api/book/{id}**: Deletes a book by its ID.
 - **DELETE /api/book**:  Deletes multiple books by their IDs.
 
-  ### Authorization
+### Authorization
 
 All book-related endpoints require user authentication via JWT. Use the token received from the **login** endpoint to authorize requests.
 
-### Example Authentication
+## Example Authentication
 
 1. **Login** to get a token:
    - `POST /api/auth/login`
