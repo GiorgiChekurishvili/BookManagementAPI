@@ -24,7 +24,7 @@ namespace Book_Management_API.DataAccess
             {
                 return null;
             }
-            if(VerifyPasswordHash(email, userData.PasswordHash!, userData.PasswordSalt!))
+            if(VerifyPasswordHash(password, userData!.PasswordHash!, userData.PasswordSalt!))
             {
                 var token = CreateToken(userData);
                 return token;
@@ -52,14 +52,14 @@ namespace Book_Management_API.DataAccess
             using(var hmac = new HMACSHA512())
             {
                 passwordSalt = hmac.Key;
-                passwordHash = System.Text.Encoding.UTF8.GetBytes(password);
+                passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
             }
         }
         private bool VerifyPasswordHash(string password,byte[] passwordHash, byte[] passwordSalt)
         {
             using(var hmac = new HMACSHA512(passwordSalt))
             {
-                var computedHash = System.Text.Encoding.UTF8.GetBytes(password);
+                var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
                 return computedHash.SequenceEqual(passwordHash);
             }
         }

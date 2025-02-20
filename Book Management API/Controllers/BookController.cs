@@ -2,6 +2,7 @@
 using Book_Management_API.DataAccess;
 using Book_Management_API.DTOs;
 using Book_Management_API.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -18,6 +19,7 @@ namespace Book_Management_API.Controllers
             _bookRepository = bookRepository;
             _mapper = mapper;
         }
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<ActionResult<BookDTO>> GetById(int id)
         {
@@ -30,6 +32,7 @@ namespace Book_Management_API.Controllers
             var mapbook = _mapper.Map<BookDTO>(book);
             return Ok(mapbook);
         }
+        [Authorize]
         [HttpGet("by-title")]
         public async Task<ActionResult<BookDTO>> GetByTitle([FromQuery] string title)
         {
@@ -41,12 +44,14 @@ namespace Book_Management_API.Controllers
             var mapbook = _mapper.Map<BookDTO>(book);
             return Ok(mapbook);
         }
+        [Authorize]
         [HttpGet("titles")]
         public async Task<ActionResult<string>> GetAllTitle()
         {
             var bookstitle = await _bookRepository.GetBooksTitle();
             return Ok(bookstitle);
         }
+        [Authorize]
         [HttpPost("add")]
         public async Task<IActionResult> Insert([FromBody] BookDTO book)
         {
@@ -63,6 +68,7 @@ namespace Book_Management_API.Controllers
             return Ok(id);
        
         }
+        [Authorize]
         [HttpPost("add/bulk")]
         public async Task<IActionResult> InsertBulk([FromBody] List<BookDTO> books)
         {
@@ -71,6 +77,7 @@ namespace Book_Management_API.Controllers
             return Ok(ids);
 
         }
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] BookDTO book)
         {
@@ -84,12 +91,14 @@ namespace Book_Management_API.Controllers
             }
             return Ok();
         }
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             await _bookRepository.DeleteBook(id);
             return Ok();
         }
+        [Authorize]
         [HttpDelete]
         public async Task<IActionResult> DeleteBulk(List<int> ids)
         {
