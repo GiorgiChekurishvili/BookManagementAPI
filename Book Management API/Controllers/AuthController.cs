@@ -14,6 +14,7 @@ namespace Book_Management_API.Controllers
         {
             _repository = repisotory;
         }
+
         [HttpPost("login")]
         public async Task<ActionResult<string>> Login(UserLoginDTO userLogin)
         {
@@ -24,6 +25,7 @@ namespace Book_Management_API.Controllers
             }
             return Ok(token);
         }
+
         [HttpPost("register")]
         public async Task<ActionResult<int>> Register(UserRegisterDTO userRegister)
         {

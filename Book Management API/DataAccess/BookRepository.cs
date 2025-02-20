@@ -11,6 +11,9 @@ namespace Book_Management_API.DataAccess
         {
             _context = context;
         }
+        // this method Adds a new book to the database.
+        //returns The ID of the added book, or -1 if the book title is not unique
+        //or the publication year is invalid.
         public async Task<int> AddBook(Book book)
         {
             if (book.PublicationYear > DateTime.Now.Year)
@@ -26,7 +29,8 @@ namespace Book_Management_API.DataAccess
             await _context.SaveChangesAsync();
             return book.Id;
         }
-
+        // this method Adds multiple books to the database.
+        // returns A list of IDs of the successfully added books
         public async Task<IEnumerable<int>> AddBulkBooks(List<Book> books)
         {
             var newBooks = new List<Book>();
@@ -49,14 +53,14 @@ namespace Book_Management_API.DataAccess
             return insertedbooks;
 
         }
-
+        // this method Marks a book as deleted by setting the property IsDeleted to true.
         public async Task DeleteBook(int id)
         {
             var book = await _context.Books.FindAsync(id);
             book!.IsDeleted = true;
             await _context.SaveChangesAsync();
         }
-
+        // this method Marks multiple books as deleted by setting IsDeleted property to true.
         public async Task DeleteBulkBooks(List<int> ids)
         {
             var books = await _context.Books.Where(x => ids.Contains(x.Id)).ToListAsync();
@@ -66,7 +70,8 @@ namespace Book_Management_API.DataAccess
             }
             await _context.SaveChangesAsync();
         }
-
+        // this method Retrieves a book by its ID.
+        // returns The book if found and not deleted; otherwise, it will return null
         public async Task<Book> GetBookById(int id)
         {
             var book = await _context.Books.Where(x => x.Id == id && x.IsDeleted == false).FirstOrDefaultAsync();
@@ -77,7 +82,8 @@ namespace Book_Management_API.DataAccess
             }
             return book;
         }
-
+        // this method Retrieves a book by its title.
+        // returns The book if found and not deleted; otherwise, null.
         public async Task<Book> GetBookByTitle(string title)
         {
             var book = await _context.Books.Where(x => x.Title.ToLower().Contains(title.ToLower()) && x.IsDeleted == false).FirstOrDefaultAsync();
@@ -89,6 +95,8 @@ namespace Book_Management_API.DataAccess
             return book;
         }
 
+        // this method Retrieves a list of book titles, ordered by popularity and recency.
+        //returns a list of book titles sorted based on the Popularity Score.
         public async Task<IEnumerable<string>> GetBooksTitle()
         {
             var bookstitle = await _context.Books
@@ -97,7 +105,9 @@ namespace Book_Management_API.DataAccess
                 .Select(x => x.Title).ToListAsync();
             return bookstitle;
         }
-
+        // this method Updates an existing book in the database.
+        //returns The updated book if successful; otherwise, null, but in controller we dont return updated book
+        // i only wanted to validate the API by returning nulls if user inputs incorrect data and applying relevant HTTP status codes
         public async Task<Book> UpdateBook(Book book)
         {
             if (book.PublicationYear > DateTime.Now.Year)

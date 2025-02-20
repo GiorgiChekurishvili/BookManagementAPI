@@ -17,6 +17,10 @@ namespace Book_Management_API.DataAccess
             _context = context;
             _config = config;
         }
+
+        // Authenticates a user based on email and password.
+        // it also uses private methods VerifyPasswordHash() and CreateToken()
+        // returns A JWT token if authentication is successful, otherwise null.
         public async Task<string> Login(string email, string password)
         {
             var userData = await _context.Users.Where(x=>x.Email == email).FirstOrDefaultAsync();
@@ -32,6 +36,9 @@ namespace Book_Management_API.DataAccess
             return null;
         }
 
+        // Registers a new user with an email and hashed password.
+        //it also uses private method CreatePasswordHash()
+        // returnsThe ID of the newly created user if successful, or -1 if the email is already in use.
         public async Task<int> Register(string email, string password)
         {
             var ifExists =  await _context.Users.Where(x => x.Email == email).FirstOrDefaultAsync();
@@ -47,6 +54,8 @@ namespace Book_Management_API.DataAccess
             return user.Id;
 
         }
+
+        // Creates a password hash using HMACSHA512, it is implemeted in Register() method.
         private void CreatePasswordHash(string password , out byte[] passwordHash, out byte[] passwordSalt)
         {
             using(var hmac = new HMACSHA512())
@@ -55,6 +64,9 @@ namespace Book_Management_API.DataAccess
                 passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
             }
         }
+
+        // Verifies a password against its stored hash and salt, it is implemented in Login() method.
+        // returns True if the password matches the hash, otherwise false.
         private bool VerifyPasswordHash(string password,byte[] passwordHash, byte[] passwordSalt)
         {
             using(var hmac = new HMACSHA512(passwordSalt))
@@ -63,6 +75,9 @@ namespace Book_Management_API.DataAccess
                 return computedHash.SequenceEqual(passwordHash);
             }
         }
+
+        // Generates a JWT token for a given user, it is implemented in Login() method.
+        // returns A JWT token as a string.
         private string CreateToken(User user)
         {
             List<Claim> claims = new List<Claim>()
