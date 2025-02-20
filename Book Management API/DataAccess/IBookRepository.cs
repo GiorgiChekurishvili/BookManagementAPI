@@ -11,5 +11,6 @@ namespace Book_Management_API.DataAccess
         Task<Book> GetBookById(int id);
         Task<Book> GetBookByTitle(string title);
         Task DeleteBook(int id);
+        Task DeleteBulkBooks(List<int> ids);
     }
 }

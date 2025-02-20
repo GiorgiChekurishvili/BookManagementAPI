@@ -34,6 +34,16 @@ namespace Book_Management_API.DataAccess
             await _context.SaveChangesAsync();
         }
 
+        public async Task DeleteBulkBooks(List<int> ids)
+        {
+            var books = await _context.Books.Where(x => ids.Contains(x.Id)).ToListAsync();
+            foreach (var book in books) 
+            {
+                book!.IsDeleted = false;
+            }
+            await _context.SaveChangesAsync();
+        }
+
         public async Task<Book> GetBookById(int id)
         {
             var book = await _context.Books.Where(x => x.Id == id && x.IsDeleted == false).FirstOrDefaultAsync();
