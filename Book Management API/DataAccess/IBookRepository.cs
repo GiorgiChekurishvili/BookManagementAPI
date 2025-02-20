@@ -10,5 +10,6 @@ namespace Book_Management_API.DataAccess
         Task<IEnumerable<string>> GetBooksTitle();
         Task<Book> GetBookById(int id);
         Task<Book> GetBookByTitle(string title);
+        Task DeleteBook(int id);
     }
 }
