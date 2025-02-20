@@ -91,7 +91,10 @@ namespace Book_Management_API.DataAccess
 
         public async Task<IEnumerable<string>> GetBooksTitle()
         {
-            var bookstitle = await _context.Books.Where(x=>x.IsDeleted == false).Select(x=>x.Title).ToListAsync();
+            var bookstitle = await _context.Books
+                .Where(x => x.IsDeleted == false)
+                .OrderByDescending(x=>x.ViewsCount * 0.5 + (DateTime.Now.Year - x.PublicationYear) * 2)
+                .Select(x => x.Title).ToListAsync();
             return bookstitle;
         }
 
