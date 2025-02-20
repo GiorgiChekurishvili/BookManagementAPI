@@ -18,7 +18,6 @@ namespace Book_Management_API.Entities.Context
             modelBuilder.Entity<User>().HasIndex(x=>x.Email).IsUnique();
 
             modelBuilder.Entity<Book>().HasKey(x=> x.Id);
-            modelBuilder.Entity<Book>().HasIndex(x => x.Title).IsUnique();
 
 
         }

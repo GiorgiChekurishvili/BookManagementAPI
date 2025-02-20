@@ -62,7 +62,7 @@ namespace Book_Management_API.DataAccess
             var books = await _context.Books.Where(x => ids.Contains(x.Id)).ToListAsync();
             foreach (var book in books) 
             {
-                book!.IsDeleted = false;
+                book!.IsDeleted = true;
             }
             await _context.SaveChangesAsync();
         }
@@ -101,17 +101,18 @@ namespace Book_Management_API.DataAccess
             {
                 return null;
             }
-            var bookById = await _context.Books.Where(x => x.Id == book.Id && x.IsDeleted == false).FirstOrDefaultAsync();
+            var bookById = await _context.Books.AsNoTracking().Where(x => x.Id == book.Id && x.IsDeleted == false).FirstOrDefaultAsync();
             if (bookById != null)
             {
                 if(bookById.Title != book.Title)
                 {
-                    var uniqueBookTitle = await GetBookByTitle(bookById.Title);
+                    var uniqueBookTitle = await _context.Books.Where(x => x.Title.ToLower().Contains(book.Title.ToLower()) && x.IsDeleted == false).FirstOrDefaultAsync();
                     if (uniqueBookTitle != null)
                     {
                         return null;
                     }
                 }
+                book.ViewsCount = bookById.ViewsCount;
                 _context.Books.Entry(book).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
                 return book;

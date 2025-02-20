@@ -8,7 +8,7 @@ namespace Book_Management_API.Models
         public required string Title { get; set; }
         public int PublicationYear { get; set; }
         public required string AuthorName { get; set; }
-        public int ViewsCount { get; set; } = 0;
+        public int ViewsCount { get; set; }
         public bool IsDeleted { get; set; } = false;
     }
 }

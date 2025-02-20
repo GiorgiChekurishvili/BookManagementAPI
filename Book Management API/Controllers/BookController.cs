@@ -76,6 +76,7 @@ namespace Book_Management_API.Controllers
         {
             
             var bookmap = _mapper.Map<Book>(book);
+            bookmap.Id = id;
             var validations = await _bookRepository.UpdateBook(bookmap);
             if(validations == null)
             {
@@ -87,7 +88,7 @@ namespace Book_Management_API.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             await _bookRepository.DeleteBook(id);
-            return NoContent();
+            return Ok();
         }
         [HttpDelete]
         public async Task<IActionResult> DeleteBulk(List<int> ids)
