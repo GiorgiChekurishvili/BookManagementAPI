@@ -6,7 +6,7 @@ namespace Book_Management_API.DataAccess
     {
         Task<int> AddBook(Book book);
         Task<IEnumerable<int>> AddBulkBooks(List<Book> books);
-        Task UpdateBook(Book book);
+        Task<Book> UpdateBook(Book book);
         Task<IEnumerable<string>> GetBooksTitle();
         Task<Book> GetBookById(int id);
         Task<Book> GetBookByTitle(string title);

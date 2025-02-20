@@ -13,7 +13,7 @@ namespace Book_Management_API.DataAccess
         }
         public async Task<int> AddBook(Book book)
         {
-            if (book.PublicationYear > Convert.ToInt32(DateTime.Now.Year))
+            if (book.PublicationYear > DateTime.Now.Year)
             {
                 return -1;
             }
@@ -33,7 +33,7 @@ namespace Book_Management_API.DataAccess
             
             foreach (var book in books)
             {
-                if (book.PublicationYear > Convert.ToInt32(DateTime.Now.Year))
+                if (book.PublicationYear > DateTime.Now.Year)
                 {
                     continue;
                 }
@@ -85,14 +85,28 @@ namespace Book_Management_API.DataAccess
             return bookstitle;
         }
 
-        public async Task UpdateBook(Book book)
+        public async Task<Book> UpdateBook(Book book)
         {
-            var bookById = GetBookById(book.Id);
+            if (book.PublicationYear > DateTime.Now.Year)
+            {
+                return null;
+            }
+            var bookById = await GetBookById(book.Id);
             if (bookById != null)
             {
+                if(bookById.Title != book.Title)
+                {
+                    var uniqueBookTitle = await GetBookByTitle(bookById.Title);
+                    if (uniqueBookTitle != null)
+                    {
+                        return null;
+                    }
+                }
                 _context.Books.Entry(book).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
+                return book;
             }
+            return null;
         }
     }
 }
