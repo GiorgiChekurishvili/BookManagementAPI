@@ -30,7 +30,7 @@
 1. Clone the repository:
 
    ```bash
-   gh repo clone GiorgiChekurishvili/BookManagementAPI
+   git clone https://github.com/GiorgiChekurishvili/BookManagementAPI.git
 
 2. **Navigate to the project directory:**
 
