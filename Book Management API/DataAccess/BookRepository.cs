@@ -11,19 +11,42 @@ namespace Book_Management_API.DataAccess
         {
             _context = context;
         }
-        public async Task AddBook(Book book)
+        public async Task<int> AddBook(Book book)
         {
+            if (book.PublicationYear > Convert.ToInt32(DateTime.Now.Year))
+            {
+                return -1;
+            }
+            var uniqueBookTitle = await GetBookByTitle(book.Title);
+            if (uniqueBookTitle != null) 
+            {
+                return -1;
+            }
             await _context.Books.AddAsync(book);
             await _context.SaveChangesAsync();
+            return book.Id;
         }
 
-        public async Task AddBulkBooks(List<Book> books)
+        public async Task<IEnumerable<int>> AddBulkBooks(List<Book> books)
         {
+            var newBooks = new List<Book>();
+            
             foreach (var book in books)
             {
-                await _context.Books.AddAsync(book);
+                if (book.PublicationYear > Convert.ToInt32(DateTime.Now.Year))
+                {
+                    continue;
+                }
+                var uniqueBookTitle = await GetBookByTitle(book.Title);
+                if (uniqueBookTitle == null)
+                {
+                    newBooks.Add(book);
+                }
             }
+            await _context.AddRangeAsync(newBooks);
             await _context.SaveChangesAsync();
+            var insertedbooks = newBooks.Select(x => x.Id).ToList();
+            return insertedbooks;
 
         }
 

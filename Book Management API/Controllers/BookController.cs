@@ -22,12 +22,20 @@ namespace Book_Management_API.Controllers
         public async Task<ActionResult<BookDTO>> GetById(int id)
         {
             var book = await _bookRepository.GetBookById(id);
+            if (book == null)
+            {
+                return NotFound("book not found");
+            }
             return Ok(book);
         }
         [HttpGet]
         public async Task<ActionResult<BookDTO>> GetByTitle(string title)
         {
             var book = await _bookRepository.GetBookByTitle(title);
+            if (book == null)
+            {
+                return NotFound("book not found");
+            }
             return Ok(book);
         }
         [HttpGet]
@@ -42,13 +50,22 @@ namespace Book_Management_API.Controllers
             var map = _mapper.Map<List<Book>>(books);
             if (books.Count == 1)
             {
-                await _bookRepository.AddBook(map[0]);
-                return Ok();
+                
+                var id = await _bookRepository.AddBook(map[0]);
+                if(id == -1)
+                {
+                    return BadRequest("publication year is invalid");
+                }
+                else if(id == -2)
+                {
+                    return BadRequest("Book already exists");
+                }
+                return Ok(id);
             }
             else
             {
-                await _bookRepository.AddBulkBooks(map);
-                return Ok();
+                var ids = await _bookRepository.AddBulkBooks(map);
+                return Ok(ids);
             }
 
         }
