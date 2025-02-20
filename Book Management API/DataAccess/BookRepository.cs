@@ -70,12 +70,22 @@ namespace Book_Management_API.DataAccess
         public async Task<Book> GetBookById(int id)
         {
             var book = await _context.Books.Where(x => x.Id == id && x.IsDeleted == false).FirstOrDefaultAsync();
+            if(book != null)
+            {
+                book.ViewsCount++;
+                await _context.SaveChangesAsync();
+            }
             return book;
         }
 
         public async Task<Book> GetBookByTitle(string title)
         {
             var book = await _context.Books.Where(x => x.Title.ToLower().Contains(title.ToLower()) && x.IsDeleted == false).FirstOrDefaultAsync();
+            if (book != null)
+            {
+                book.ViewsCount++;
+                await _context.SaveChangesAsync();
+            }
             return book;
         }
 
