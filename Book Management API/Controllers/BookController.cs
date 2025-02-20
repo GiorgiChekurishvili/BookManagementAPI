@@ -18,7 +18,7 @@ namespace Book_Management_API.Controllers
             _bookRepository = bookRepository;
             _mapper = mapper;
         }
-        [HttpGet]
+        [HttpGet("{id}")]
         public async Task<ActionResult<BookDTO>> GetById(int id)
         {
             var book = await _bookRepository.GetBookById(id);
@@ -28,8 +28,8 @@ namespace Book_Management_API.Controllers
             }
             return Ok(book);
         }
-        [HttpGet]
-        public async Task<ActionResult<BookDTO>> GetByTitle(string title)
+        [HttpGet("by-title")]
+        public async Task<ActionResult<BookDTO>> GetByTitle([FromQuery] string title)
         {
             var book = await _bookRepository.GetBookByTitle(title);
             if (book == null)
@@ -38,57 +38,60 @@ namespace Book_Management_API.Controllers
             }
             return Ok(book);
         }
-        [HttpGet]
+        [HttpGet("titles")]
         public async Task<ActionResult<string>> GetAllTitle()
         {
             var bookstitle = await _bookRepository.GetBooksTitle();
             return Ok(bookstitle);
         }
-        [HttpPost]
-        public async Task<IActionResult> Insert(List<BookDTO> books)
+        [HttpPost("add")]
+        public async Task<IActionResult> Insert([FromBody] BookDTO book)
+        {
+            var map = _mapper.Map<Book>(book);
+            var id = await _bookRepository.AddBook(map);
+            if (id == -1)
+            {
+                return BadRequest("publication year is invalid");
+            }
+            else if (id == -2)
+            {
+                return BadRequest("Book already exists");
+            }
+            return Ok(id);
+       
+        }
+        [HttpPost("add/bulk")]
+        public async Task<IActionResult> InsertBulk([FromBody] List<BookDTO> books)
         {
             var map = _mapper.Map<List<Book>>(books);
-            if (books.Count == 1)
-            {
-                
-                var id = await _bookRepository.AddBook(map[0]);
-                if(id == -1)
-                {
-                    return BadRequest("publication year is invalid");
-                }
-                else if(id == -2)
-                {
-                    return BadRequest("Book already exists");
-                }
-                return Ok(id);
-            }
-            else
-            {
-                var ids = await _bookRepository.AddBulkBooks(map);
-                return Ok(ids);
-            }
+            var ids = await _bookRepository.AddBulkBooks(map);
+            return Ok(ids);
 
         }
-        [HttpPut]
-        public async Task<IActionResult> Update(BookDTO book)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, [FromBody] BookDTO book)
         {
+            
             var bookmap = _mapper.Map<Book>(book);
-            await _bookRepository.UpdateBook(bookmap);
+            var validations = await _bookRepository.UpdateBook(bookmap);
+            if(validations == null)
+            {
+                return BadRequest("either id or publication year is invalid or changed book title already exists");
+            }
             return Ok();
         }
-        [HttpDelete]
-        public async Task<IActionResult> Delete(List<int> ids)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
         {
-            if(ids.Count == 1)
-            {
-                await _bookRepository.DeleteBook(ids[0]);
-                return Ok();
-            }
-            else
-            {
-                await _bookRepository.DeleteBulkBooks(ids);
-                return Ok();
-            }
+            await _bookRepository.DeleteBook(id);
+            return NoContent();
+        }
+        [HttpDelete]
+        public async Task<IActionResult> DeleteBulk(List<int> ids)
+        {
+            await _bookRepository.DeleteBulkBooks(ids);
+            return NoContent();
+            
         }
     }
 }
